@@ -1,9 +1,0 @@
-/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/bin/Debug/net48/Intent.RhinoLayer.rhp
-/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/bin/Debug/net48/Intent.RhinoLayer.pdb
-/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net48/Intent.RhinoLayer.csproj.AssemblyReference.cache
-/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net48/Intent.RhinoLayer.GeneratedMSBuildEditorConfig.editorconfig
-/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net48/Intent.RhinoLayer.AssemblyInfoInputs.cache
-/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net48/Intent.RhinoLayer.AssemblyInfo.cs
-/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net48/Intent.RhinoLayer.csproj.CoreCompileInputs.cache
-/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net48/Intent.RhinoLayer.rhp
-/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net48/Intent.RhinoLayer.pdb
