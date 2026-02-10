@@ -1,0 +1,14 @@
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/bin/Debug/net7.0/Intent.RhinoLayer.deps.json
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/bin/Debug/net7.0/Intent.RhinoLayer.runtimeconfig.json
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/bin/Debug/net7.0/Intent.RhinoLayer.rhp
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/bin/Debug/net7.0/Intent.RhinoLayer.pdb
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net7.0/Intent.RhinoLayer.csproj.AssemblyReference.cache
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net7.0/Intent.RhinoLayer.GeneratedMSBuildEditorConfig.editorconfig
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net7.0/Intent.RhinoLayer.AssemblyInfoInputs.cache
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net7.0/Intent.RhinoLayer.AssemblyInfo.cs
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net7.0/Intent.RhinoLayer.csproj.CoreCompileInputs.cache
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net7.0/Intent.RhinoLayer.rhp
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net7.0/refint/Intent.RhinoLayer.rhp
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net7.0/Intent.RhinoLayer.pdb
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net7.0/Intent.RhinoLayer.genruntimeconfig.cache
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RhinoLayer/obj/Debug/net7.0/ref/Intent.RhinoLayer.rhp

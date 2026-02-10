@@ -1,0 +1,11 @@
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/bin/Debug/net9.0/Intent.RevitStub.deps.json
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/bin/Debug/net9.0/Intent.RevitStub.dll
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/bin/Debug/net9.0/Intent.RevitStub.pdb
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/obj/Debug/net9.0/Intent.RevitStub.GeneratedMSBuildEditorConfig.editorconfig
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/obj/Debug/net9.0/Intent.RevitStub.AssemblyInfoInputs.cache
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/obj/Debug/net9.0/Intent.RevitStub.AssemblyInfo.cs
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/obj/Debug/net9.0/Intent.RevitStub.csproj.CoreCompileInputs.cache
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/obj/Debug/net9.0/Intent.RevitStub.dll
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/obj/Debug/net9.0/refint/Intent.RevitStub.dll
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/obj/Debug/net9.0/Intent.RevitStub.pdb
+/Users/tommylee/Documents/Personal Projects/RhinoIntentLayer/RhinoIntentLayer/src/Intent.RevitStub/obj/Debug/net9.0/ref/Intent.RevitStub.dll
