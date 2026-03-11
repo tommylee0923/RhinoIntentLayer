@@ -24,5 +24,10 @@
   <ItemGroup>
     <PackageReference Include="RhinoCommon" Version="8.0.23304.9001" ExcludeAssets="runtime" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Intent.Contract\Intent.Contract.csproj" />
+    <ProjectReference Include="..\Intent.Core\Intent.Core.csproj" />
+</ItemGroup>
   
 </Project>
