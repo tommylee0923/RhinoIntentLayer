@@ -1,4 +1,4 @@
-namespace Intent.Core.Validation
+namespace Intent.Contract.Validation
 {
     public static class IssueCode
     {

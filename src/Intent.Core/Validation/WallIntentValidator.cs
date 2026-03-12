@@ -1,5 +1,6 @@
 using System.Linq;
 using Intent.Contract.Models;
+using Intent.Contract.Validation;
 
 namespace Intent.Core.Validation
 {
@@ -25,7 +26,7 @@ namespace Intent.Core.Validation
                 {
                     Severity = Severity.Error,
                     Code = IssueCode.MissingStableId,
-                    Message = "StableID is required."
+                    Message = "StableId is required."
                 });
             }
 
@@ -43,9 +44,9 @@ namespace Intent.Core.Validation
             {
                 result.Issues.Add(new ValidationIssue
                 {
-                   Severity = Severity.Warning,
-                   Code = IssueCode.MissingTypeName,
-                   Message = "TypeName is missing." 
+                    Severity = Severity.Warning,
+                    Code = IssueCode.MissingTypeName,
+                    Message = "TypeName is missing."
                 });
             }
 
@@ -56,7 +57,6 @@ namespace Intent.Core.Validation
                     Severity = Severity.Error,
                     Code = IssueCode.InvalidHeight,
                     Message = "UnconnectedHeight must be greater than zero."
-                    // Unconnected height greater than are eqaul to 0 ?
                 });
             }
 

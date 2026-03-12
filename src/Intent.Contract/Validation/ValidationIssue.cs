@@ -1,6 +1,6 @@
 using System.Dynamic;
 
-namespace Intent.Core.Validation
+namespace Intent.Contract.Validation
 {
     public sealed class ValidationIssue
     {

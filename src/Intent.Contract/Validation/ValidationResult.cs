@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Intent.Core.Validation
+namespace Intent.Contract.Validation
 {
     public sealed class ValidationResult
     {
