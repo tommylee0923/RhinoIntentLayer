@@ -1,5 +1,3 @@
-using System.Dynamic;
-
 namespace Intent.Contract.Validation
 {
     public sealed class ValidationIssue
