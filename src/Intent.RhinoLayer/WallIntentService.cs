@@ -1,6 +1,7 @@
 using System;
 using Intent.Contract.Models;
 using Intent.Contract.Validation;
+using Intent.Contract.Serialization;
 using Intent.Core.Validation;
 using Rhino.DocObjects;
 using System.Text.Json;
@@ -33,10 +34,10 @@ namespace Intent.RhinoLayer
         public const string KeyValidationStatus = "Intent.Validation.Status";
         public const string KeyValidationJson = "Intent.Validation.Json";
 
-        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
+        // private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        // {
+        //     WriteIndented = true
+        // };
 
         // ----------------------------------------------------------
         // Write
@@ -51,14 +52,14 @@ namespace Intent.RhinoLayer
         public static ValidationResult AssignAndValidate(RhinoObject rhinoObject, WallIntent intent)
         {
             // Serialize intent
-            var intentJson = JsonSerializer.Serialize(intent, JsonOptions);
+            var intentJson = IntentJson.SerializeWallIntent(intent);
 
             // Run validation (pure - no Rhino dependency)
             var validator = new WallIntentValidator();
             var result = validator.Validate(intent);
 
             // Serialize validation result
-            var validationJson = JsonSerializer.Serialize(result, JsonOptions);
+            var validationJson = IntentJson.SerializeValidationResult(result);
 
             // Write all keys to UserText
             var attrs = rhinoObject.Attributes.Duplicate();
@@ -89,7 +90,7 @@ namespace Intent.RhinoLayer
                 return null;
             }
 
-            return JsonSerializer.Deserialize<WallIntent>(json, JsonOptions);
+            return IntentJson.DeserializeWallIntent(json);
         }
 
         /// <summary>
@@ -105,7 +106,7 @@ namespace Intent.RhinoLayer
                 return null;
             }
 
-            return JsonSerializer.Deserialize<ValidationResult>(json, JsonOptions);
+            return IntentJson.DeserializeValidationResult(json);
         }
 
         /// <summary>
