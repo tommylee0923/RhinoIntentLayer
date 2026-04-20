@@ -98,11 +98,11 @@ namespace Intent.RhinoLayer
             RhinoApp.WriteLine("-------------------------------------");
             RhinoApp.WriteLine("WallIntent");
             RhinoApp.WriteLine("-------------------------------------");
-            RhinoApp.WriteLine($"   StableId:           {intent.StableId ?? "(none)"}");
-            RhinoApp.WriteLine($"   SchemaVersion:      {intent.SchemaVersion ?? "(none)"}");
+            RhinoApp.WriteLine($"   StableId:           {intent.StableId ?? "none"}");
+            RhinoApp.WriteLine($"   SchemaVersion:      {intent.SchemaVersion ?? "none"}");
             RhinoApp.WriteLine($"   ObjectType:         {intent.ObjectType}");
-            RhinoApp.WriteLine($"   TypeName:           {(string.IsNullOrWhiteSpace(intent.TypeName) ? "(none)" : intent.TypeName)}");
-            RhinoApp.WriteLine($"   UnconnectedHeight:  {(intent.UnconnectedHeight.HasValue ? intent.UnconnectedHeight.Value.ToString("F2") + "m" : "(none)")}");
+            RhinoApp.WriteLine($"   TypeName:           {(string.IsNullOrWhiteSpace(intent.TypeName) ? "none" : intent.TypeName)}");
+            RhinoApp.WriteLine($"   UnconnectedHeight:  {(intent.UnconnectedHeight.HasValue ? intent.UnconnectedHeight.Value.ToString("F2") + "m" : "none")}");
         }
 
         private static void PrintValidation(ValidationResult validation)
