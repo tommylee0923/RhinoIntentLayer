@@ -1,4 +1,5 @@
 using System.Formats.Asn1;
+using System.IO.Pipelines;
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices.ObjectiveC;
@@ -28,14 +29,19 @@ public sealed class WallIntentValidatorTests
     /// Returns a WallIntent that passes every validation rule.
     /// Individual tests mutate one field to probe a specific rule.
     /// </summary>
-    
+
     private static WallIntent ValidIntent() => new WallIntent
     {
-        SchemaVersion   = "1.0",
-        StableId        = "wall-001",
-        ObjectType      = ObjectType.Wall,
-        TypeName        = "Generic - 200mm",
-        UnconnectedHeight = 3.0
+        SchemaVersion = "1.0",
+        StableId = "wall-001",
+        ObjectType = ObjectType.Wall,
+        TypeName = "Generic - 200mm",
+        NominalWidth = 0.2,
+        UnconnectedHeight = 3.0,
+        BaseOffset = 0.0,
+        TopOffset = 0.0,
+        LocationLine = LocationLine.WallCenterline,
+        IsStructural = false
     };
 
     private static WallIntentValidator Validator() => new WallIntentValidator();
@@ -56,7 +62,7 @@ public sealed class WallIntentValidatorTests
     // ------------------------------------------------------------------------
     // COMMON_MISSING_SCHEMA_VERSION
     // ------------------------------------------------------------------------
-    
+
     [Fact]
     public void Validate_NullSchemaVersion_ReturnsError()
     {
@@ -67,7 +73,7 @@ public sealed class WallIntentValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Issues, i =>
-            i.Code      == IssueCode.MissingSchemaVersion &&
+            i.Code == IssueCode.MissingSchemaVersion &&
             i.Severity == Severity.Error);
     }
 
@@ -81,7 +87,8 @@ public sealed class WallIntentValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Issues, i =>
-            i.Code          == IssueCode.MissingSchemaVersion);
+            i.Code == IssueCode.MissingSchemaVersion &&
+            i.Severity == Severity.Error);
     }
 
     [Fact]
@@ -94,7 +101,8 @@ public sealed class WallIntentValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Issues, i =>
-            i.Code == IssueCode.MissingSchemaVersion);
+            i.Code == IssueCode.MissingSchemaVersion &&
+            i.Severity == Severity.Error);
     }
 
     // ------------------------------------------------------------------------
@@ -111,8 +119,8 @@ public sealed class WallIntentValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Issues, i =>
-            i.Code      == IssueCode.MissingStableId &&
-            i.Severity  == Severity.Error);
+            i.Code == IssueCode.MissingStableId &&
+            i.Severity == Severity.Error);
     }
 
     [Fact]
@@ -125,7 +133,8 @@ public sealed class WallIntentValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Issues, i =>
-            i.Code == IssueCode.MissingStableId);
+            i.Code == IssueCode.MissingStableId &&
+            i.Severity == Severity.Error);
     }
 
     // ------------------------------------------------------------------------
@@ -142,15 +151,13 @@ public sealed class WallIntentValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Issues, i =>
-            i.Code      == IssueCode.InvalidObjectType &&
-            i.Severity  == Severity.Error);
+            i.Code == IssueCode.InvalidObjectType &&
+            i.Severity == Severity.Error);
     }
 
     [Fact]
     public void Validate_DefaultConstructedIntent_FailsObjectTypeCheck()
     {
-        // WallIntent() defaults ObjectType to Unknown - ensure the validator
-        // catches this so callers cannot forget to see it.
 
         var intent = new WallIntent();
 
@@ -169,9 +176,9 @@ public sealed class WallIntentValidatorTests
 
         var result = Validator().Validate(intent);
 
-        Assert.Contains(result.Issues, i => 
-            i.Code      == IssueCode.MissingTypeName &&
-            i.Severity  == Severity.Warning);
+        Assert.Contains(result.Issues, i =>
+            i.Code == IssueCode.MissingTypeName &&
+            i.Severity == Severity.Warning);
     }
 
     // ------------------------------------------------------------------------
@@ -187,7 +194,7 @@ public sealed class WallIntentValidatorTests
         var result = Validator().Validate(intent);
 
         Assert.Contains(result.Issues, i =>
-            i.Code  == IssueCode.MissingTypeName &&
+            i.Code == IssueCode.MissingTypeName &&
             i.Severity == Severity.Warning);
     }
 
@@ -205,6 +212,51 @@ public sealed class WallIntentValidatorTests
     }
 
     // ------------------------------------------------------------------------
+    // WALL_MISSING_NOMINAL_WIDTH / WALL_INVALID_NOMINAL_WIDTH
+    // ------------------------------------------------------------------------
+
+    [Fact]
+    public void Validate_NullNominalWidth_ReturnsWarning()
+    {
+        var intent = ValidIntent();
+        intent.NominalWidth = null;
+
+        var result = Validator().Validate(intent);
+
+        Assert.True(result.IsValid);
+        Assert.Contains(result.Issues, i =>
+            i.Code == IssueCode.MissingNominalWidth &&
+            i.Severity == Severity.Warning);
+    }
+
+    [Fact]
+    public void Validate_ZeroNominalWidth_ReturnsError()
+    {
+        var intent = ValidIntent();
+        intent.NominalWidth = 0;
+
+        var result = Validator().Validate(intent);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Issues, i =>
+            i.Code == IssueCode.InvalidNominalWidth &&
+            i.Severity == Severity.Error);
+    }
+
+    [Fact]
+    public void Validate_NegativeNominalWidth_ReturnsError()
+    {
+        var intent = ValidIntent();
+        intent.NominalWidth = -0.1;
+
+        var result = Validator().Validate(intent);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Issues, i =>
+            i.Code == IssueCode.InvalidNominalWidth &&
+            i.Severity == Severity.Error);
+    }
+    // ------------------------------------------------------------------------
     // WALL_INVALID_HEIGHT
     // ------------------------------------------------------------------------
 
@@ -218,8 +270,8 @@ public sealed class WallIntentValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Issues, i =>
-            i.Code      == IssueCode.InvalidHeight &&
-            i.Severity  == Severity.Error);
+            i.Code == IssueCode.InvalidHeight &&
+            i.Severity == Severity.Error);
     }
 
     [Fact]
@@ -232,7 +284,7 @@ public sealed class WallIntentValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Issues, i =>
-            i.Code      == IssueCode.InvalidHeight);
+            i.Code == IssueCode.InvalidHeight);
     }
 
     [Fact]
@@ -245,9 +297,117 @@ public sealed class WallIntentValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Issues, i =>
-            i.Code      == IssueCode.InvalidHeight);
+            i.Code == IssueCode.InvalidHeight);
     }
 
+    // ------------------------------------------------------------------------
+    // WALL_INVALID_OFFSET
+    // ------------------------------------------------------------------------
+
+    [Fact]
+    public void Validate_InvalidOffsetCombination_ReturnsError()
+    {
+        var intent = ValidIntent();
+        intent.UnconnectedHeight = 3.0;
+        intent.BaseOffset = -10;
+        intent.TopOffset = 10;
+
+        var result = Validator().Validate(intent);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Issues, i =>
+            i.Code == IssueCode.InvalidOffsetCombination &&
+            i.Severity == Severity.Error);
+    }
+    // ------------------------------------------------------------------------
+    // WALL_MISSING_LOCATION_LINE (Warning)
+    // ------------------------------------------------------------------------
+
+    [Fact]
+    public void Validate_NullLocationLine_ReturnsWarning()
+    {
+        var intent = ValidIntent();
+        intent.LocationLine = null;
+
+        var result = Validator().Validate(intent);
+
+        Assert.True(result.IsValid);
+        Assert.Contains(result.Issues, i =>
+            i.Code == IssueCode.MissingLocationLine &&
+            i.Severity == Severity.Warning);
+    }
+
+    [Fact]
+    public void Validate_LocationLineSet_NoIssue()
+    {
+        var intent = ValidIntent();
+        intent.LocationLine = LocationLine.FinishFaceExterior;
+
+        var result = Validator().Validate(intent);
+
+        Assert.True(result.IsValid);
+        Assert.DoesNotContain(result.Issues, i =>
+            i.Code == IssueCode.MissingLocationLine);
+    }
+    // ------------------------------------------------------------------------
+    // WALL_MISSING_STRUCTURAL_FLAG (Info)
+    // ------------------------------------------------------------------------
+
+    [Fact]
+    public void Validate_NullIsStructural_ReturnsInfo()
+    {
+        var intent = ValidIntent();
+        intent.IsStructural = null;
+
+        var result = Validator().Validate(intent);
+
+        Assert.True(result.IsValid);
+        Assert.Contains(result.Issues, i =>
+            i.Code == IssueCode.MissingStructuralFlag &&
+            i.Severity == Severity.Info);
+    }
+
+    [Fact]
+    public void Validate_IsStructuralSet_NoIssue()
+    {
+        var intent = ValidIntent();
+        intent.IsStructural = true;
+
+        var result = Validator().Validate(intent);
+
+        Assert.True(result.IsValid);
+        Assert.DoesNotContain(result.Issues, i =>
+            i.Code == IssueCode.MissingStructuralFlag);
+    }
+    // ------------------------------------------------------------------------
+    // Severity Contract - Warnings and Info do not invalidate
+    // ------------------------------------------------------------------------
+
+    [Fact]
+    public void Validate_OnlyWarningAndInfo_IsValidTrue()
+    {
+        var intent = new WallIntent
+        {
+            SchemaVersion = "1.0",
+            StableId = "wall-001",
+            ObjectType = ObjectType.Wall,
+            TypeName = null,
+            NominalWidth = null,
+            UnconnectedHeight = 3.0,
+            LocationLine = null,
+            IsStructural = null
+        };
+
+        var result = Validator().Validate(intent);
+
+        Assert.True(result.IsValid);
+        Assert.DoesNotContain(result.Issues, i =>
+            i.Severity == Severity.Error);
+
+        // When
+
+        // Then
+    }
     // ------------------------------------------------------------------------
     // Multi-failure accumulation
     // ------------------------------------------------------------------------
@@ -260,16 +420,21 @@ public sealed class WallIntentValidatorTests
 
         var intent = new WallIntent
         {
-            SchemaVersion       = "",
-            StableId            = "",
-            ObjectType          = ObjectType.Unknown,
-            TypeName            = "",
-            UnconnectedHeight   = 0
+            SchemaVersion = "",
+            StableId = "",
+            ObjectType = ObjectType.Unknown,
+            TypeName = "",
+            NominalWidth = -1.0,
+            UnconnectedHeight = 0,
+            BaseOffset = 10,
+            TopOffset = -10,
+            LocationLine = null,
+            IsStructural = null
         };
 
         var result = Validator().Validate(intent);
 
         Assert.False(result.IsValid);
-        Assert.Equal(5, result.Issues.Count);
+        Assert.Equal(9, result.Issues.Count);
     }
 }
