@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Linq;
 using Intent.Contract.Models;
 using Intent.Contract.Validation;
@@ -26,7 +27,7 @@ namespace Intent.Core.Validation
                 {
                     Severity = Severity.Error,
                     Code = IssueCode.MissingStableId,
-                    Message = "StableId is required."
+                    Message = "StableID is required."
                 });
             }
 
@@ -36,7 +37,7 @@ namespace Intent.Core.Validation
                 {
                     Severity = Severity.Error,
                     Code = IssueCode.InvalidObjectType,
-                    Message = "ObjectType must be Wall."
+                    Message = "ObjectType must be wall."
                 });
             }
 
@@ -44,19 +45,79 @@ namespace Intent.Core.Validation
             {
                 result.Issues.Add(new ValidationIssue
                 {
-                    Severity = Severity.Warning,
+                    Severity = Severity.Error,
                     Code = IssueCode.MissingTypeName,
-                    Message = "TypeName is missing."
+                    Message = "TypeName is required."
                 });
             }
 
-            if (!intent.UnconnectedHeight.HasValue || intent.UnconnectedHeight.Value <= 0)
+            if (!intent.NominalWidth.HasValue)
+            {
+                result.Issues.Add(new ValidationIssue
+                {
+                    Severity = Severity.Warning,
+                    Code = IssueCode.MissingNominalWidth,
+                    Message = "NominalWidth is missing: Revit type selection may be ambiguous."
+                });
+            }
+
+            if (intent.NominalWidth <= 0)
+            {
+                result.Issues.Add(new ValidationIssue
+                {
+                    Severity = Severity.Error,
+                    Code = IssueCode.InvalidNominalWidth,
+                    Message = "NominalWidth must be greater than zero."
+                });
+            }
+
+            if (intent.UnconnectedHeight <= 0 || !intent.UnconnectedHeight.HasValue)
             {
                 result.Issues.Add(new ValidationIssue
                 {
                     Severity = Severity.Error,
                     Code = IssueCode.InvalidHeight,
                     Message = "UnconnectedHeight must be greater than zero."
+                });
+            }
+
+            if (
+                intent.UnconnectedHeight.HasValue &&
+                intent.UnconnectedHeight > 0 &&
+                intent.BaseOffset.HasValue &&
+                intent.TopOffset.HasValue
+                )
+            {
+                var effectiveHeight = intent.UnconnectedHeight + intent.TopOffset - intent.BaseOffset;
+
+                if (effectiveHeight <= 0)
+                {
+                    result.Issues.Add(new ValidationIssue
+                    {
+                        Severity = Severity.Error,
+                        Code = IssueCode.InvalidOffsetCombination,
+                        Message = $"BaseOffset {intent.BaseOffset}m and TopOffset {intent.TopOffset}m results in negative or zero effective Wall height."
+                    });
+                }
+            }
+
+            if (!intent.LocationLine.HasValue)
+            {
+                result.Issues.Add(new ValidationIssue
+                {
+                    Severity = Severity.Warning,
+                    Code = IssueCode.MissingLocationLine,
+                    Message = "LocationLine is not set. Revit will default to WallCenterLine."
+                });
+            }
+
+            if (!intent.IsStructural.HasValue)
+            {
+                result.Issues.Add(new ValidationIssue
+                {
+                    Severity = Severity.Info,
+                    Code = IssueCode.MissingStructuralFlag,
+                    Message = "IsStructural is not set. Structural coordination may be affected."
                 });
             }
 
