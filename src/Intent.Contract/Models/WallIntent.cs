@@ -37,7 +37,7 @@ namespace Intent.Contract.Models
         // ----------------------------------------------------------
         public double? UnconnectedHeight { get; set; }
         public double? BaseOffset {get; set; }
-        public double? TopOffser {get; set; }
+        public double? TopOffset {get; set; }
         public LocationLine? LocationLine {get; set; }
         public bool? IsStructural {get; set; }
         
@@ -54,6 +54,9 @@ namespace Intent.Contract.Models
             StableId = string.Empty;
             ObjectType = ObjectType.Unknown;
             TypeName = string.Empty;
+            LocationLine = Models.LocationLine.WallCenterline;
+            BaseOffset = 0.0;
+            TopOffset = 0.0;
             Extensions = new Dictionary<string, string>();
         }
     }
