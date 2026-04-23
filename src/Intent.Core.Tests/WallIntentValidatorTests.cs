@@ -300,17 +300,17 @@ public sealed class WallIntentValidatorTests
             i.Code == IssueCode.InvalidHeight);
     }
 
-    // ------------------------------------------------------------------------
-    // WALL_INVALID_OFFSET
-    // ------------------------------------------------------------------------
+    // ---------------------------------------------------------------
+    // WALL_INVALID_OFFSET_COMBINATION
+    // ---------------------------------------------------------------
 
     [Fact]
-    public void Validate_InvalidOffsetCombination_ReturnsError()
+    public void Validate_OffsetConsumesHeight_ReturnsError()
     {
         var intent = ValidIntent();
         intent.UnconnectedHeight = 3.0;
-        intent.BaseOffset = -10;
-        intent.TopOffset = 10;
+        intent.BaseOffset = 4.0;
+        intent.TopOffset = 0.0;
 
         var result = Validator().Validate(intent);
 
@@ -318,6 +318,35 @@ public sealed class WallIntentValidatorTests
         Assert.Contains(result.Issues, i =>
             i.Code == IssueCode.InvalidOffsetCombination &&
             i.Severity == Severity.Error);
+    }
+
+    [Fact]
+    public void Validate_OffsetExactlyZeroEffectiveHeight_ReturnsError()
+    {
+        var intent = ValidIntent();
+        intent.UnconnectedHeight = 3.0;
+        intent.BaseOffset = 3.0;
+        intent.TopOffset = 0.0;
+
+        var result = Validator().Validate(intent);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Issues, i =>
+            i.Code == IssueCode.InvalidOffsetCombination);
+    }
+
+    [Fact]
+    public void Validate_ValidOffsetCombination_NoIssue()
+    {
+        var intent = ValidIntent();
+        intent.UnconnectedHeight = 3.0;
+        intent.BaseOffset = 0.5;
+        intent.TopOffset = -0.5;
+
+        var result = Validator().Validate(intent);
+
+        Assert.DoesNotContain(result.Issues, i =>
+            i.Code == IssueCode.InvalidOffsetCombination);
     }
     // ------------------------------------------------------------------------
     // WALL_MISSING_LOCATION_LINE (Warning)
@@ -435,6 +464,6 @@ public sealed class WallIntentValidatorTests
         var result = Validator().Validate(intent);
 
         Assert.False(result.IsValid);
-        Assert.Equal(9, result.Issues.Count);
+        Assert.Equal(8, result.Issues.Count);
     }
 }
