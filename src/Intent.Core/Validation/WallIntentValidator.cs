@@ -45,9 +45,9 @@ namespace Intent.Core.Validation
             {
                 result.Issues.Add(new ValidationIssue
                 {
-                    Severity = Severity.Error,
+                    Severity = Severity.Warning,
                     Code = IssueCode.MissingTypeName,
-                    Message = "TypeName is required."
+                    Message = "TypeName is missing. A default wall type will be used."
                 });
             }
 
