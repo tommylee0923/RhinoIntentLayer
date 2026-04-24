@@ -4,10 +4,7 @@ using Intent.Contract.Validation;
 using Rhino;
 using Rhino.Commands;
 using Rhino.DocObjects;
-using Rhino.Geometry;
-using Rhino.Input;
 using Rhino.Input.Custom;
-using Rhino.Render.CustomRenderMeshes;
 
 namespace Intent.RhinoLayer
 {
@@ -89,6 +86,96 @@ namespace Intent.RhinoLayer
             }
             var typeName = getType.StringResult();
 
+            // Nominal Width
+            var getWidth = new GetNumber();
+            getWidth.SetCommandPrompt("Nominal wall width (m, press enter to skip)");
+            getWidth.SetDefaultNumber(0.2);
+            getWidth.AcceptNothing(true);
+            getWidth.Get();
+
+            if (getWidth.CommandResult() != Result.Success)
+            {
+                return getWidth.CommandResult();
+            }
+
+            double? nominalWidth = getWidth.CommandResult() == Result.Nothing
+                ? (double?)null
+                : getWidth.Number();
+
+            // Base Offset
+            var getBaseOffset = new GetNumber();
+            getBaseOffset.SetCommandPrompt("Base offset (m, press Enter for 0)");
+            getBaseOffset.SetDefaultNumber(0.0);
+            getBaseOffset.AcceptNothing(true);
+            getBaseOffset.Get();
+
+            if (getBaseOffset.CommandResult() != Result.Success)
+            {
+                return getBaseOffset.CommandResult();
+            }
+
+            double baseOffset = getBaseOffset.CommandResult() == Result.Nothing
+                ? 0.0
+                : getBaseOffset.Number();
+
+            // Top Offset
+            var getTopOffset = new GetNumber();
+            getTopOffset.SetCommandPrompt("Top offset (m, press Enter for 0)");
+            getTopOffset.SetDefaultNumber(0.0);
+            getTopOffset.AcceptNothing(true);
+            getTopOffset.Get();
+
+            if (getTopOffset.CommandResult() != Result.Success)
+            {
+                return getTopOffset.CommandResult();
+            }
+
+            double topOffset = getTopOffset.CommandResult() == Result.Nothing
+                ? 0.0
+                : getTopOffset.Number();
+            
+            // Location Line
+            var getLocationLine = new GetString();
+            getLocationLine.SetCommandPrompt(
+                "Location line (0=WallCenterline, 1=CoreCenterline, 2=FinishFaceExterior," +
+                "3=FinishFaceInterior, 4=CoreFaceExterior, 5=CoreFaceInterior, Enter to skip)"
+                );
+            getLocationLine.SetDefaultString("0");
+            getLocationLine.AcceptNothing(true);
+            getLocationLine.Get();
+
+            if (getLocationLine.CommandResult() != Result.Success)
+            {
+                return getLocationLine.CommandResult();
+            }
+
+            LocationLine? locationline = null;
+            if (getLocationLine.CommandResult() != Result.Nothing &&
+                int.TryParse(getLocationLine.StringResult(), out int locationLineValue) &&
+                System.Enum.IsDefined(typeof(LocationLine), locationLineValue))
+            {
+                locationline = (LocationLine)locationLineValue;
+            }
+
+            // IsStructural
+            var getIsStructural = new GetString();
+            getIsStructural.SetCommandPrompt("Is it structural? (y/n, press Enter to skip)");
+            getIsStructural.AcceptNothing(true);
+            getIsStructural.Get();
+
+            if (getIsStructural.CommandResult() != Result.Success)
+            {
+                return getIsStructural.CommandResult();
+            }
+
+            bool? isStructural = null;
+            if (getIsStructural.CommandResult() != Result.Nothing)
+            {
+                var input = getIsStructural.StringResult().Trim().ToLower();
+                if (input == "y" || input == "yes") isStructural = true;
+                else if (input == "n" || input == "no") isStructural = false;
+            }
+
             // ----------------------------------------------------------
             // Step 3 - Build the WallIntent DTO
             // ----------------------------------------------------------
@@ -98,7 +185,11 @@ namespace Intent.RhinoLayer
                 StableId = stableId,
                 ObjectType = Contract.Models.ObjectType.Wall,
                 TypeName = typeName,
-                UnconnectedHeight = height
+                UnconnectedHeight = height,
+                BaseOffset = baseOffset,
+                TopOffset = topOffset,
+                LocationLine = locationline,
+                IsStructural = isStructural
             };
 
             // ----------------------------------------------------------
@@ -123,7 +214,7 @@ namespace Intent.RhinoLayer
                 RhinoApp.WriteLine("WallIntent assigned with issues. Status: Invalid.");
                 foreach (var issue in result.Issues)
                 {
-                    RhinoApp.WriteLine("    [{0}] {1}: {2}, issue.Severity, issue.Code, issue.Message");
+                    RhinoApp.WriteLine($"    [{issue.Severity}] {issue.Code}: {issue.Message}");
                 }
             }
 
