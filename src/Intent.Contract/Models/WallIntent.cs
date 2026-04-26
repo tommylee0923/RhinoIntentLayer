@@ -13,6 +13,9 @@ namespace Intent.Contract.Models
     /// 
     /// Type-level hints:
     ///     TypeName, NominalWidth
+    /// 
+    /// Geometry provenance:
+    ///     GeometrySource, LocationCurveStart, LovationCurveEnd
     /// </summary>
     public sealed class WallIntent
     {
@@ -24,6 +27,13 @@ namespace Intent.Contract.Models
 
         // Must be ObjectType.Wall
         public ObjectType ObjectType { get; set; }
+
+        // ----------------------------------------------------------
+        // Geometry provenance
+        // ----------------------------------------------------------
+        public GeometrySource GeometrySource { get; set; }
+        public double[] LocationCurveStart {get; set; }
+        public double[] LocationCurveEnd {get; set; }
 
         // ----------------------------------------------------------
         // Type-level hints
@@ -53,6 +63,7 @@ namespace Intent.Contract.Models
             SchemaVersion = string.Empty;
             StableId = string.Empty;
             ObjectType = ObjectType.Unknown;
+            GeometrySource = GeometrySource.Unknown;
             TypeName = string.Empty;
             LocationLine = Models.LocationLine.WallCenterline;
             BaseOffset = 0.0;

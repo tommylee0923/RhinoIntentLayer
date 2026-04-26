@@ -5,6 +5,7 @@ using Intent.Contract.Serialization;
 using Intent.Core.Validation;
 using Rhino.DocObjects;
 using System.Text.Json;
+using Rhino.Geometry;
 
 namespace Intent.RhinoLayer
 {
@@ -49,12 +50,28 @@ namespace Intent.RhinoLayer
         /// visual feedback.
         /// </summary>
         
-        public static ValidationResult AssignAndValidate(RhinoObject rhinoObject, WallIntent intent)
+        public static ValidationResult AssignAndValidate(
+            RhinoObject rhinoObject, 
+            WallIntent intent,
+            LineCurve locationCurve,
+            GeometrySource geometrySource)
         {
+            // Store curve endpoints and source on the intent before validating
+            if (locationCurve != null)
+            {
+                intent.GeometrySource = geometrySource;
+                intent.LocationCurveStart = PointToArray(locationCurve.PointAtStart);
+                intent.LocationCurveEnd = PointToArray(locationCurve.PointAtEnd);
+            }
+            else
+            {
+                intent.GeometrySource = GeometrySource.Unknown;
+            }
+            
             // Serialize intent
             var intentJson = IntentJson.SerializeWallIntent(intent);
 
-            // Run validation (pure - no Rhino dependency)
+            // Run validation (no Rhino dependency)
             var validator = new WallIntentValidator();
             var result = validator.Validate(intent);
 
@@ -116,6 +133,14 @@ namespace Intent.RhinoLayer
         {
             var objectType = rhinoObject.Attributes.GetUserString(KeyObjectType);
             return objectType == "WallIntent";
+        }
+
+        // ----------------------------------------------------------
+        // Helper
+        // ----------------------------------------------------------
+        private static double[] PointToArray(Point3d point)
+        {
+            return new double[] { point.X, point.Y, point.Z };
         }
     }
 }

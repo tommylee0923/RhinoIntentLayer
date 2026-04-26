@@ -41,6 +41,16 @@ namespace Intent.Core.Validation
                 });
             }
 
+            if (intent.LocationCurveStart == null || intent.LocationCurveEnd == null)
+            {
+                result.Issues.Add(new ValidationIssue
+                {
+                   Severity = Severity.Error,
+                   Code = IssueCode.MissingLocationCurve,
+                   Message = "Location curve is missing. Wall cannot be placed without a centerline." 
+                });
+            }
+
             if (string.IsNullOrWhiteSpace(intent.TypeName))
             {
                 result.Issues.Add(new ValidationIssue

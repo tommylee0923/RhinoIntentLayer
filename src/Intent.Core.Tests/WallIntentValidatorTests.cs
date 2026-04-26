@@ -41,7 +41,9 @@ public sealed class WallIntentValidatorTests
         BaseOffset = 0.0,
         TopOffset = 0.0,
         LocationLine = LocationLine.WallCenterline,
-        IsStructural = false
+        IsStructural = false,
+        LocationCurveStart = new double[] {0, 0, 0},
+        LocationCurveEnd = new double[] {5, 0, 0}
     };
 
     private static WallIntentValidator Validator() => new WallIntentValidator();
@@ -424,7 +426,9 @@ public sealed class WallIntentValidatorTests
             NominalWidth = null,
             UnconnectedHeight = 3.0,
             LocationLine = null,
-            IsStructural = null
+            IsStructural = null,
+            LocationCurveStart = new double[] {0, 0, 0},
+            LocationCurveEnd = new double[] {5, 0, 0}
         };
 
         var result = Validator().Validate(intent);
@@ -464,6 +468,6 @@ public sealed class WallIntentValidatorTests
         var result = Validator().Validate(intent);
 
         Assert.False(result.IsValid);
-        Assert.Equal(8, result.Issues.Count);
+        Assert.Equal(9, result.Issues.Count);
     }
 }

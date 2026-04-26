@@ -17,6 +17,11 @@ namespace Intent.Contract.Validation
         public const string InvalidObjectType = "WALL_INVALID_OBJECT_TYPE";
 
         // ---------------------------------------------------------------
+        // geometry
+        // ---------------------------------------------------------------
+        public const string MissingLocationCurve = "WALL_MISSING_LOCATION_CURVE";
+
+        // ---------------------------------------------------------------
         // type-level hints
         // ---------------------------------------------------------------
         public const string MissingTypeName = "WALL_MISSING_TYPE_NAME";

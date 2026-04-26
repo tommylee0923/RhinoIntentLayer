@@ -35,12 +35,12 @@ namespace Intent.RhinoLayer
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
             // ----------------------------------------------------------
-            // Step 1 - Select a Curve
+            // Step 1 - Select a Brep or Curve
             // ----------------------------------------------------------
 
             var go = new GetObject();
-            go.SetCommandPrompt("Select a curve to assign wall intent");
-            go.GeometryFilter = Rhino.DocObjects.ObjectType.Curve;
+            go.SetCommandPrompt("Select a wall solid or curve to assign wall intent");
+            go.GeometryFilter = Rhino.DocObjects.ObjectType.Curve | Rhino.DocObjects.ObjectType.Brep;
             go.SubObjectSelect = false;
             go.Get();
 
@@ -57,7 +57,27 @@ namespace Intent.RhinoLayer
             }
 
             // ----------------------------------------------------------
-            // Step 2 - Collect wall parameters from the command line
+            // Step 2 - Extract wall centerline from geometry
+            // ----------------------------------------------------------
+            var locationCurve = WallGeometryExtractor.TryExtract(rhinoObject, out var sourceResult);
+
+            if (locationCurve == null)
+            {
+                RhinoApp.WriteLine("Could not derive a wall centerline from the selected geometry.");
+                RhinoApp.WriteLine("Select a box-like solid or a linear curve.");
+                return Result.Failure;
+            }
+
+            var geometrySource = MapGeometrySource(sourceResult);
+
+            if (sourceResult == GeometrySourceResult.CurveApproximated)
+                RhinoApp.WriteLine("Note: Non-linear curve approximated as straight line.");
+
+            RhinoApp.WriteLine($"Location line derived from {geometrySource}. " +
+                               $"Length: {locationCurve.GetLength():F2}m");
+
+            // ----------------------------------------------------------
+            // Step 3 - Collect wall parameters from the command line
             // ----------------------------------------------------------
             var stableId = Guid.NewGuid().ToString();
 
@@ -133,7 +153,7 @@ namespace Intent.RhinoLayer
             double topOffset = getTopOffset.CommandResult() == Result.Nothing
                 ? 0.0
                 : getTopOffset.Number();
-            
+
             // Location Line
             var getLocationLine = new GetString();
             getLocationLine.SetCommandPrompt(
@@ -177,7 +197,7 @@ namespace Intent.RhinoLayer
             }
 
             // ----------------------------------------------------------
-            // Step 3 - Build the WallIntent DTO
+            // Step 4 - Build the WallIntent DTO
             // ----------------------------------------------------------
             var intent = new WallIntent
             {
@@ -185,6 +205,7 @@ namespace Intent.RhinoLayer
                 StableId = stableId,
                 ObjectType = Contract.Models.ObjectType.Wall,
                 TypeName = typeName,
+                NominalWidth = nominalWidth,
                 UnconnectedHeight = height,
                 BaseOffset = baseOffset,
                 TopOffset = topOffset,
@@ -193,17 +214,18 @@ namespace Intent.RhinoLayer
             };
 
             // ----------------------------------------------------------
-            // Step 4 - Assign, validate, write to UserText
+            // Step 5 - Assign, validate, write to UserText
             // ----------------------------------------------------------
-            var result = WallIntentService.AssignAndValidate(rhinoObject, intent);
+            var result = WallIntentService.AssignAndValidate(
+                rhinoObject, intent, locationCurve, geometrySource);
 
             // ----------------------------------------------------------
-            // Step 5 - Apply color override based on validation status
+            // Step 6 - Apply color override based on validation status
             // ----------------------------------------------------------
             ApplyValidationColor(doc, rhinoObject, result);
 
             // ----------------------------------------------------------
-            // Step 6 - Report to command line
+            // Step 7 - Report to command line
             // ----------------------------------------------------------
             if (result.IsValid)
             {
@@ -222,6 +244,23 @@ namespace Intent.RhinoLayer
             return Result.Success;
         }
 
+        // ----------------------------------------------------------
+        // Helpers
+        // ----------------------------------------------------------
+        private static GeometrySource MapGeometrySource(GeometrySourceResult result)
+        {
+            switch (result)
+            {
+                case GeometrySourceResult.Curve:
+                case GeometrySourceResult.CurveApproximated:
+                    return GeometrySource.Curve;
+                case GeometrySourceResult.Brep:
+                    return GeometrySource.Brep;
+                default:
+                    return GeometrySource.Unknown;
+            }
+        }
+        
         private static void ApplyValidationColor(RhinoDoc doc, RhinoObject rhinoObject, ValidationResult result)
         {
             var attrs = rhinoObject.Attributes.Duplicate();
@@ -245,5 +284,6 @@ namespace Intent.RhinoLayer
 
             doc.Objects.ModifyAttributes(rhinoObject, attrs, quiet: true);
         }
+
     }
 }

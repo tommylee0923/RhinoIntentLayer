@@ -30,12 +30,12 @@ namespace Intent.RhinoLayer
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
             // ----------------------------------------------------------
-            // Step 1 - Select a Curve
+            // Step 1 - Select a Brep or Curve
             // ----------------------------------------------------------
 
             var go = new GetObject();
-            go.SetCommandPrompt("Select a curve to inspect");
-            go.GeometryFilter = Rhino.DocObjects.ObjectType.Curve;
+            go.SetCommandPrompt("Select a solid wall or curve to inspect");
+            go.GeometryFilter = Rhino.DocObjects.ObjectType.Curve | Rhino.DocObjects.ObjectType.Brep;
             go.SubObjectSelect = false;
             go.Get();
 
@@ -101,8 +101,16 @@ namespace Intent.RhinoLayer
             RhinoApp.WriteLine($"   StableId:           {intent.StableId ?? "none"}");
             RhinoApp.WriteLine($"   SchemaVersion:      {intent.SchemaVersion ?? "none"}");
             RhinoApp.WriteLine($"   ObjectType:         {intent.ObjectType}");
+            RhinoApp.WriteLine($"   GeometrySource:     {intent.GeometrySource}");
+            RhinoApp.WriteLine($"   LocationSource:     {FormatCurve(intent)}");
             RhinoApp.WriteLine($"   TypeName:           {(string.IsNullOrWhiteSpace(intent.TypeName) ? "none" : intent.TypeName)}");
+            RhinoApp.WriteLine($"   NominalWidth:       {(intent.NominalWidth.HasValue ? intent.NominalWidth.Value.ToString("F3") + "m" : "none")}");
             RhinoApp.WriteLine($"   UnconnectedHeight:  {(intent.UnconnectedHeight.HasValue ? intent.UnconnectedHeight.Value.ToString("F2") + "m" : "none")}");
+            RhinoApp.WriteLine($"   UnconnectedHeight:  {(intent.UnconnectedHeight.HasValue ? intent.UnconnectedHeight.Value.ToString("F2") + "m" : "none")}");
+            RhinoApp.WriteLine($"   BaseOffset:         {(intent.BaseOffset.HasValue ? intent.BaseOffset.Value.ToString("F2") + "m" : "none")}");
+            RhinoApp.WriteLine($"   TopOffset:          {(intent.TopOffset.HasValue ? intent.TopOffset.Value.ToString("F2") + "m" : "none")}");
+            RhinoApp.WriteLine($"   LocationLine:       {(intent.LocationLine.HasValue ? intent.LocationLine.Value.ToString() : "none")}");
+            RhinoApp.WriteLine($"   IsStructural:       {(intent.IsStructural.HasValue ? intent.IsStructural.Value.ToString() : "none")}");
         }
 
         private static void PrintValidation(ValidationResult validation)
@@ -134,6 +142,16 @@ namespace Intent.RhinoLayer
             }
 
             RhinoApp.WriteLine("-------------------------------------");
+        }
+
+        private static string FormatCurve(WallIntent intent)
+        {
+            if (intent.LocationCurveStart == null || intent.LocationCurveEnd == null)
+                return "none";
+
+            return $"({intent.LocationCurveStart[0]:F2}, {intent.LocationCurveStart[1]:F2}, {intent.LocationCurveStart[2]:F2})" +
+                   $" → " +
+                   $"{intent.LocationCurveEnd[0]:F2}, {intent.LocationCurveEnd[1]:F2}, {intent.LocationCurveEnd[2]:F2}";
         }
     }
 }
