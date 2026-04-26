@@ -4,7 +4,7 @@ Inspired by Rhino.Inside.Revit open issue No. 1036 (https://github.com/mcneel/rh
 
 A contract-driven BIM intent system built in C# that assigns structured building intents to Rhino geometry with validation and prepares clean data for downstream systems, mainly with Revit integration via Rhino.Inside.Revit planned.
 
-A curve in Rhino is just a curve, but with RhinoIntentLayer, you could assign necessary attributes depending on the building intent (type) to smoothen the workflow between Rhino and Revit.
+Revit doesn't understand what a brep or a curve is in Rhino, but with RhinoIntentLayer, you could assign necessary attributes depending on the building intent (type) to smoothen the workflow between Rhino and Revit.
 
 ---
 
@@ -32,21 +32,11 @@ RhinoIntentLayer/
 
 ## Rhino Commands
 
-**`AssignWallIntent`** — select a curve, enter wall parameters, assigns and validates intent, stores JSON in UserText, applies color feedback.
+**`AssignWallIntent`** — select a brep or a curve, enter wall parameters, assigns and validates intent, stores JSON in UserText, applies color feedback.
 
-**`InspectWallIntent`** — select a curve, prints a readable summary of the stored intent and validation result to the command line.
+**`InspectWallIntent`** — select a brep or a curve, prints a readable summary of the stored intent and validation result to the command line.
 
 **Under development**
-
----
-
-## Running Tests
-
-```bash
-dotnet test src/Intent.Core.Tests
-```
-
-15 xUnit tests cover individual rule violations, severity distinctions, edge cases, and multi-failure accumulation. No Rhino installation required.
 
 ---
 
