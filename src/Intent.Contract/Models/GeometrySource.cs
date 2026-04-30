@@ -8,6 +8,7 @@ namespace Intent.Contract.Models
     {
         Unknown = 0,
         Curve = 1,
-        Brep = 2
+        Brep = 2,
+        Extrusion = 3
     }
 }
