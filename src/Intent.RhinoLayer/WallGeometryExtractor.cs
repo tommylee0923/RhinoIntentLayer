@@ -1,4 +1,7 @@
+using System.Data;
+using Eto.Forms;
 using Intent.Contract.Models;
+using Rhino;
 using Rhino.DocObjects;
 using Rhino.Geometry;
 
@@ -32,6 +35,11 @@ namespace Intent.RhinoLayer
             if (rhinoObject.Geometry is Brep brep)
             {
                 return ExtractFromBrep(brep, out source);
+            }
+
+            if (rhinoObject.Geometry is Extrusion extrusion)
+            {
+                return ExtractFromExtrusion(extrusion, out source);
             }
 
             return null;
@@ -133,6 +141,98 @@ namespace Intent.RhinoLayer
             source = GeometrySourceResult.Brep;
             return new LineCurve(start, end);
         }
+
+        // ----------------------------------------------------------
+        // Extrusion Path
+        // ----------------------------------------------------------
+        private static LineCurve ExtractFromExtrusion(Extrusion extrusion, out GeometrySourceResult source)
+        {
+            source = GeometrySourceResult.Unknown;
+
+            var profile = extrusion.Profile3d(0, 0);
+            if (profile == null)
+                return null;
+            
+            var path = extrusion.PathLineCurve();
+            if (path == null)
+                return null;
+            
+            double baseZ = path.PointAtStart.Z;
+
+            // Open extrusion from a line
+            if (profile.IsLinear())
+            {
+                var start = new Point3d(profile.PointAtStart.X, profile.PointAtStart.Y, baseZ);
+                var end = new Point3d(profile.PointAtEnd.X, profile.PointAtEnd.Y, baseZ);
+
+                if (start.DistanceTo(end) < Rhino.RhinoMath.ZeroTolerance)
+                    return null;
+                
+                source = GeometrySourceResult.Extrusion;
+                return new LineCurve(start, end);
+            }
+
+            // Closed extrusion
+            var polylineCurve = profile.ToPolyline(
+                mainSegmentCount: 0,
+                subSegmentCount: 1,
+                maxAngleRadians: 0.1,
+                maxChordLengthRatio: 0.1,
+                maxAspectRatio: 0,
+                tolerance: RhinoMath.ZeroTolerance,
+                minEdgeLength: RhinoMath.ZeroTolerance,
+                maxEdgeLength: double.MaxValue,
+                keepStartPoint: true);
+            
+            if (polylineCurve == null)
+                return null;
+            
+            var polyline = polylineCurve.ToPolyline();
+
+            var segments = polyline.GetSegments();
+            if (segments == null || segments.Length == 0)
+                return null;
+            
+            Line longestSegment = segments[0];
+            double longestLength = segments[0].Length;
+
+            foreach (var segment in segments)
+            {
+                if (segment.Length > longestLength)
+                {
+                    longestLength = segment.Length;
+                    longestSegment = segment;
+                }
+            }
+
+            var segStart = new Point3d(longestSegment.From.X, longestSegment.From.Y, baseZ);
+            var segEnd = new Point3d(longestSegment.To.X, longestSegment.To.Y, baseZ);
+
+            var bbox = extrusion.GetBoundingBox(accurate: true);
+            var faceCenter = new Point3d(
+                (bbox.Min.X + bbox.Max.X) / 2.0,
+                (bbox.Min.Y + bbox.Max.Y) / 2.0,
+                baseZ
+            );
+
+            var edgeDir = segEnd - segStart;
+            edgeDir.Unitize();
+            var perpDir = Vector3d.CrossProduct(edgeDir, Vector3d.ZAxis);
+            perpDir.Unitize();
+
+            var toCenter = faceCenter - segStart;
+            double perpDist = toCenter * perpDir;
+            var offset = perpDir * perpDist;
+
+            segStart += offset;
+            segEnd += offset;
+
+            if (segStart.DistanceTo(segEnd) < RhinoMath.ZeroTolerance)
+                return null;
+            
+            source = GeometrySourceResult.Extrusion;
+            return new LineCurve(segStart, segEnd);
+        }
     };
 
     internal enum GeometrySourceResult
@@ -140,6 +240,7 @@ namespace Intent.RhinoLayer
         Unknown,
         Curve,
         CurveApproximated,
-        Brep
+        Brep,
+        Extrusion
     }
 }

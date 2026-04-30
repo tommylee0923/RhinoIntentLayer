@@ -256,6 +256,8 @@ namespace Intent.RhinoLayer
                     return GeometrySource.Curve;
                 case GeometrySourceResult.Brep:
                     return GeometrySource.Brep;
+                case GeometrySourceResult.Extrusion:
+                    return GeometrySource.Extrusion;
                 default:
                     return GeometrySource.Unknown;
             }

@@ -98,19 +98,18 @@ namespace Intent.RhinoLayer
             RhinoApp.WriteLine("-------------------------------------");
             RhinoApp.WriteLine("WallIntent");
             RhinoApp.WriteLine("-------------------------------------");
-            RhinoApp.WriteLine($"   StableId:           {intent.StableId ?? "none"}");
-            RhinoApp.WriteLine($"   SchemaVersion:      {intent.SchemaVersion ?? "none"}");
-            RhinoApp.WriteLine($"   ObjectType:         {intent.ObjectType}");
-            RhinoApp.WriteLine($"   GeometrySource:     {intent.GeometrySource}");
-            RhinoApp.WriteLine($"   LocationSource:     {FormatCurve(intent)}");
-            RhinoApp.WriteLine($"   TypeName:           {(string.IsNullOrWhiteSpace(intent.TypeName) ? "none" : intent.TypeName)}");
-            RhinoApp.WriteLine($"   NominalWidth:       {(intent.NominalWidth.HasValue ? intent.NominalWidth.Value.ToString("F3") + "m" : "none")}");
-            RhinoApp.WriteLine($"   UnconnectedHeight:  {(intent.UnconnectedHeight.HasValue ? intent.UnconnectedHeight.Value.ToString("F2") + "m" : "none")}");
-            RhinoApp.WriteLine($"   UnconnectedHeight:  {(intent.UnconnectedHeight.HasValue ? intent.UnconnectedHeight.Value.ToString("F2") + "m" : "none")}");
-            RhinoApp.WriteLine($"   BaseOffset:         {(intent.BaseOffset.HasValue ? intent.BaseOffset.Value.ToString("F2") + "m" : "none")}");
-            RhinoApp.WriteLine($"   TopOffset:          {(intent.TopOffset.HasValue ? intent.TopOffset.Value.ToString("F2") + "m" : "none")}");
-            RhinoApp.WriteLine($"   LocationLine:       {(intent.LocationLine.HasValue ? intent.LocationLine.Value.ToString() : "none")}");
-            RhinoApp.WriteLine($"   IsStructural:       {(intent.IsStructural.HasValue ? intent.IsStructural.Value.ToString() : "none")}");
+            RhinoApp.WriteLine($"   StableId:               {intent.StableId ?? "none"}");
+            RhinoApp.WriteLine($"   SchemaVersion:          {intent.SchemaVersion ?? "none"}");
+            RhinoApp.WriteLine($"   ObjectType:             {intent.ObjectType}");
+            RhinoApp.WriteLine($"   GeometrySource:         {intent.GeometrySource}");
+            RhinoApp.WriteLine($"   LocationSource:         {FormatCurve(intent)}");
+            RhinoApp.WriteLine($"   TypeName:               {(string.IsNullOrWhiteSpace(intent.TypeName) ? "none" : intent.TypeName)}");
+            RhinoApp.WriteLine($"   NominalWidth:           {(intent.NominalWidth.HasValue ? intent.NominalWidth.Value.ToString("F3") + "m" : "none")}");
+            RhinoApp.WriteLine($"   UnconnectedHeight:      {(intent.UnconnectedHeight.HasValue ? intent.UnconnectedHeight.Value.ToString("F2") + "m" : "none")}");
+            RhinoApp.WriteLine($"   BaseOffset:             {(intent.BaseOffset.HasValue ? intent.BaseOffset.Value.ToString("F2") + "m" : "none")}");
+            RhinoApp.WriteLine($"   TopOffset:              {(intent.TopOffset.HasValue ? intent.TopOffset.Value.ToString("F2") + "m" : "none")}");
+            RhinoApp.WriteLine($"   LocationLine:           {(intent.LocationLine.HasValue ? intent.LocationLine.Value.ToString() : "none")}");
+            RhinoApp.WriteLine($"   IsStructural:           {(intent.IsStructural.HasValue ? intent.IsStructural.Value.ToString() : "none")}");
         }
 
         private static void PrintValidation(ValidationResult validation)
