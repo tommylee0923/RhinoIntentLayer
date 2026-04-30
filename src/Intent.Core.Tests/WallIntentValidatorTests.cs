@@ -1,9 +1,3 @@
-using System.Formats.Asn1;
-using System.IO.Pipelines;
-using System.Reflection;
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices.ObjectiveC;
-using System.Xml.Schema;
 using Intent.Contract.Models;
 using Intent.Contract.Validation;
 using Intent.Core.Validation;
@@ -139,6 +133,52 @@ public sealed class WallIntentValidatorTests
             i.Severity == Severity.Error);
     }
 
+    // ------------------------------------------------------------------------
+    // WALL_MISSING_LOCATION_CURVE
+    // ------------------------------------------------------------------------
+
+    [Fact]
+    public void Validate_NullLocationCurveStart_ReturnError()
+    {
+        // Given
+        var intent = ValidIntent();
+        intent.LocationCurveStart = null;
+
+        var result = Validator().Validate(intent);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Issues, i => 
+            i.Code == IssueCode.MissingLocationCurve &&
+            i.Severity == Severity.Error);
+    }
+    [Fact]
+    public void Validate_NullLocationCurveEnd_ReturnError()
+    {
+        // Given
+        var intent = ValidIntent();
+        intent.LocationCurveEnd = null;
+
+        var result = Validator().Validate(intent);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Issues, i => 
+            i.Code == IssueCode.MissingLocationCurve &&
+            i.Severity == Severity.Error);
+    }
+
+    [Fact]
+    public void Validate_LocationCurveSet_NoIssue()
+    {
+        var intent = ValidIntent();
+        intent.LocationCurveStart = new double[] {0, 0, 0};
+        intent.LocationCurveEnd = new double[] {5, 0, 0};
+
+        var result = Validator().Validate(intent);
+
+        Assert.DoesNotContain(result.Issues, i =>
+            i.Code == IssueCode.MissingLocationCurve);
+        
+    }
     // ------------------------------------------------------------------------
     // WALL_INVALID_OBJECT_TYPE
     // ------------------------------------------------------------------------
@@ -436,10 +476,6 @@ public sealed class WallIntentValidatorTests
         Assert.True(result.IsValid);
         Assert.DoesNotContain(result.Issues, i =>
             i.Severity == Severity.Error);
-
-        // When
-
-        // Then
     }
     // ------------------------------------------------------------------------
     // Multi-failure accumulation
