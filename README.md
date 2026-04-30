@@ -2,7 +2,7 @@
 
 Inspired by Rhino.Inside.Revit open issue No. 1036 (https://github.com/mcneel/rhino.inside-revit/issues/1036)
 
-A contract-driven BIM intent system built in C# that assigns structured building intents to Rhino geometry with validation and prepares clean data for downstream systems, mainly with Revit integration via Rhino.Inside.Revit planned.
+A contract-driven BIM intent system built in C# that assigns structured building intent to Rhino geometry with validation and prepares clean data for downstream systems, mainly with Revit integration via Rhino.Inside.Revit planned.
 
 Revit doesn't understand what a brep or a curve is in Rhino, but with RhinoIntentLayer, you could assign necessary attributes depending on the building intent (type) to smoothen the workflow between Rhino and Revit.
 
@@ -26,15 +26,15 @@ RhinoIntentLayer/
 
 **Intent.RevitStub** defines integration interfaces for future Revit mapping without taking an actual Revit dependency.
 
-**Intent.RhinoLayer** contains Rhino intent services commands. Such as `WallIntentService`.
+**Intent.RhinoLayer** is the thin shell connecting the domain model to Rhino. Commands delegate to `WallIntentService` and `WallGeometryExtractor`. 
 
 ---
 
 ## Rhino Commands
 
-**`AssignWallIntent`** — select a brep or a curve, enter wall parameters, assigns and validates intent, stores JSON in UserText, applies color feedback.
+**`AssignWallIntent`** — select a solid, extrusion, or a curve, The system derives a centerline, prompts for wall parameters, assigns and validates intent, stores JSON in UserText, and applies color feedback (green/orange/red).
 
-**`InspectWallIntent`** — select a brep or a curve, prints a readable summary of the stored intent and validation result to the command line.
+**`InspectWallIntent`** — select any object with intent assigned and prints a full summary of the stored intent and validation result to the command line.
 
 **Under development**
 
@@ -45,7 +45,6 @@ RhinoIntentLayer/
 | | |
 |---|---|
 | Language | C# / .NET |
-| Serialization | `System.Text.Json` |
 | Unit testing | xUnit |
 | Rhino plugin | RhinoCommon SDK (Rhino 8) |
 | Data storage | Rhino UserText (inside `.3dm`) |
@@ -56,11 +55,13 @@ RhinoIntentLayer/
 
 | Phase | | |
 |---|---|---|
-| 1 | Unit tests | ✅ |
-| 2 | `AssignTYPEIntent` + `TYPEIntentService` + `InspectTYPEIntent`| ✅ |
-| 3 | Standalone exporter (`intents.json`) | 🔲 Planned |
-| 4 | Rhino.Inside.Revit bridge | 🔲 Planned |
-| 5 | Eto panel UI | 🔲 Planned |
+| 1 | Unit tests — validation engine| 
+| 2 | `AssignWallIntent` + `WallIntentService` + `InspectWallIntent`|
+| 3 | Brep + extrusion centerline extraction (`WallGeometryExtractor`)|
+| 4 | `Intent.RevitStub` — mapping interfaces and result DTOs|
+| 5 | Standalone exporter (`intents.json`) | 🔲 Planned |
+| 6 | Rhino.Inside.Revit bridge | 🔲 Planned |
+| 7 | Eto panel UI | 🔲 Planned |
 
 ---
 
