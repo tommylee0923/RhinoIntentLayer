@@ -17,7 +17,7 @@ namespace Intent.Contract.Models
     /// Geometry provenance:
     ///     GeometrySource, LocationCurveStart, LovationCurveEnd
     /// </summary>
-    public sealed class WallIntent
+    public sealed class WallIntent : ICurveIntent
     {
         // ----------------------------------------------------------
         // Schema / Identity
