@@ -1,6 +1,8 @@
 using System;
 using Intent.Contract.Models;
 using Intent.Contract.Validation;
+using Intent.Contract.Serialization;
+using Intent.Core.Validation;
 using Rhino;
 using Rhino.Commands;
 using Rhino.DocObjects;
@@ -216,8 +218,14 @@ namespace Intent.RhinoLayer
             // ----------------------------------------------------------
             // Step 5 - Assign, validate, write to UserText
             // ----------------------------------------------------------
-            var result = WallIntentService.AssignAndValidate(
-                rhinoObject, intent, locationCurve, geometrySource);
+            var result = IntentService.AssignAndValidate(
+                rhinoObject,
+                intent,
+                objectTypeLabel: "WallIntent",
+                serialize: IntentJson.SerializeWallIntent,
+                validate: new WallIntentValidator().Validate,
+                locationCurve: locationCurve,
+                geometrySource: geometrySource);
 
             // ----------------------------------------------------------
             // Step 6 - Apply color override based on validation status

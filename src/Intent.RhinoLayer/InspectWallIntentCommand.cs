@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Intent.Contract.Models;
+using Intent.Contract.Serialization;
 using Intent.Contract.Validation;
 using Rhino;
 using Rhino.Commands;
@@ -55,7 +56,7 @@ namespace Intent.RhinoLayer
             // Step 2 - Guard: check if intent has been assigned
             // ----------------------------------------------------------
 
-            if (!WallIntentService.HasIntent(rhinoObject))
+            if (!IntentService.HasIntent(rhinoObject, "WallIntent"))
             {
                 RhinoApp.WriteLine("This object has no WallIntent assigned.");
                 RhinoApp.WriteLine("Run AssignWallIntent first.");
@@ -66,7 +67,9 @@ namespace Intent.RhinoLayer
             // Step 3 - Read and deserialize intent
             // ----------------------------------------------------------
 
-            var intent = WallIntentService.ReadIntent(rhinoObject);
+            var intent = IntentService.ReadIntent(
+                rhinoObject,
+                IntentJson.DeserializeWallIntent);
             if (intent == null)
             {
                 RhinoApp.WriteLine("Error: Intent data could not be read.");
@@ -77,7 +80,7 @@ namespace Intent.RhinoLayer
             // Step 4 - Read and deserialize validation result
             // ----------------------------------------------------------
 
-            var validation = WallIntentService.ReadValidationResult(rhinoObject);
+            var validation = IntentService.ReadValidationResult(rhinoObject);
 
             // ----------------------------------------------------------
             // Step 5 - Print summary
